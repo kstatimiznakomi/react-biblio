@@ -1,24 +1,61 @@
-import logo from './logo.svg';
-import './App.css';
+
+import './biblioOld.css';
+import Header from './components/Header';
+import Catalog from './pages/Catalog';
+import React from 'react';
+import axios from 'axios';
+import AppContext from './context';
+import { Route, Routes } from "react-router-dom"
+
+import { createContext, useContext, useState } from "react";
 
 function App() {
+  const [items, setItems] = React.useState([]);
+  React.useEffect(() => {
+    async function getAuth(){
+
+        const [] = await Promise.all([
+          axios.get('http://localhost:8080/catalog/api/1')
+              .then((response ) => {
+                console.log(response.data);
+              })
+        ]);
+
+
+    }
+    //getAuth();
+  }, []);
+  React.useEffect(() => {
+    async function fetchData(){
+      try{
+        const [itemsResponse] = await Promise.all([
+          axios.get('http://localhost:8080/catalog/api/1')
+        ]);
+        setItems(itemsResponse.data);
+      }
+      catch (error){
+        alert('Ошибка при запросе данных ;(');
+        console.error(error);
+      }
+    }
+    fetchData();
+  }, []);
+    
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <AppContext.Provider
+      value={{
+        items
+      }}>
+        <div className="App">
+
+        <Header/>
+        <Catalog
+
+        />
+        </div>
+      </AppContext.Provider>
+
   );
 }
 
